@@ -1,0 +1,30 @@
+{
+  "name": "try-lang-graph",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node --env-file=.env --no-warnings --experimental-strip-types ./src/langgraph.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albburtsev/try-lang-graph.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/albburtsev/try-lang-graph/issues"
+  },
+  "homepage": "https://github.com/albburtsev/try-lang-graph#readme",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.19.1"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.0.5",
+    "@langchain/langgraph": "^1.0.2",
+    "@langchain/openai": "^1.1.1",
+    "zod": "^4"
+  }
+}
