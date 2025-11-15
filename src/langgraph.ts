@@ -1,13 +1,12 @@
 import z from "zod";
-import { ChatOpenAI } from "@langchain/openai";
-import { registry } from "@langchain/langgraph/zod";
 import { tool } from "@langchain/core/tools";
+import { ChatOpenAI } from "@langchain/openai";
 import { Annotation, StateGraph, END, START } from "@langchain/langgraph";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
 import {
   isAIMessage,
   BaseMessage,
   SystemMessage,
-  ToolMessage,
   HumanMessage,
 } from "@langchain/core/messages";
 
@@ -25,11 +24,17 @@ const add = tool(({ a, b }): number => a + b, {
   }),
 });
 
-const toolsByName = {
-  [add.name]: add,
-};
+const sqrt = tool(({ value }): number => Math.sqrt(value), {
+  name: "sqrt",
+  description: "Extract the square root of a number",
+  schema: z.object({
+    value: z.number().describe("The number to extract the square root from"),
+  }),
+});
 
-const modelWithTools = model.bindTools(Object.values(toolsByName));
+const tools = [add, sqrt];
+
+const modelWithTools = model.bindTools(tools);
 
 const MessagesState = Annotation.Root({
   messages: Annotation<BaseMessage[]>({
@@ -50,23 +55,7 @@ async function llmNode(state: typeof MessagesState.State) {
   };
 }
 
-async function toolNode(state: typeof MessagesState.State) {
-  const lastMessage = state.messages.at(-1);
-
-  if (lastMessage == null || !isAIMessage(lastMessage)) {
-    return { messages: [] };
-  }
-
-  const result: ToolMessage[] = [];
-
-  for (const toolCall of lastMessage.tool_calls ?? []) {
-    const tool = toolsByName[toolCall.name];
-    const observation = await tool.invoke(toolCall);
-    result.push(observation);
-  }
-
-  return { messages: result };
-}
+const toolNode = new ToolNode(tools);
 
 async function shouldContinue(state: typeof MessagesState.State) {
   const lastMessage = state.messages.at(-1);
@@ -89,7 +78,7 @@ const agent = new StateGraph(MessagesState)
   .compile();
 
 const result = await agent.invoke({
-  messages: [new HumanMessage("Add 3 and 4.")],
+  messages: [new HumanMessage("Calc sqrt(9 + 7)")],
 });
 
-console.log('~~~ result', JSON.stringify(result, null, 2))
+console.log("~~~ result", JSON.stringify(result, null, 2));
