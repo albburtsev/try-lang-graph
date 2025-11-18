@@ -4,7 +4,8 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "start": "node --env-file=.env --no-warnings --experimental-strip-types ./src/langgraph.ts",
+    "calc": "node --env-file=.env --no-warnings --experimental-strip-types ./src/calculator.ts",
+    "crop": "node --env-file=.env --no-warnings --experimental-strip-types ./src/cropper.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,6 +26,7 @@
     "@langchain/core": "^1.0.5",
     "@langchain/langgraph": "^1.0.2",
     "@langchain/openai": "^1.1.1",
+    "sharp": "^0.34.5",
     "zod": "^4"
   }
 }
